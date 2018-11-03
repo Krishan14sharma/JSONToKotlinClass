@@ -95,22 +95,7 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
 
     @Override
     public void onModelsReady(List<ClassModel> data, String singleFileName, int annotationsType) {
-        AnnotationGenerator annotations = null;
-        switch (annotationsType) {
-            case 1:
-                annotations = new GsonAnnotations();
-                break;
-            case 2:
-                annotations = new FastJsonAnnotation();
-                break;
-            case 3:
-                annotations = new MoshiAnnotations();
-                break;
-            case 4:
-                annotations = new JacksonAnnotations();
-                break;
-        }
-
+        AnnotationGenerator annotations = new GsonAnnotations();
         Project project = directory.getProject();
         PsiFileFactory factory = PsiFileFactory.getInstance(project);
         PsiDirectoryFactory directoryFactory = PsiDirectoryFactory.getInstance(directory.getProject());

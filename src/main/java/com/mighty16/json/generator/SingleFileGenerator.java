@@ -31,7 +31,7 @@ public class SingleFileGenerator extends KotlinFileGenerator {
         }
 
         for (ClassModel classData : classDataList) {
-            String content = generateFileContentForClass(classData) + "\n\n\n";
+            String content = generateFileContentForClass(classData, annotations) + "\n\n\n";
             resultFileContent.append(content);
         }
 

@@ -34,7 +34,7 @@ public abstract class LanguageResolver {
 
     public abstract String getFileName(String className);
 
-    public int getNoCharPosition(String name) {
+    public static int getNoCharPosition(String name) {
         char[] chars = name.toCharArray();
         int pos = 0;
         for (char c : chars) {

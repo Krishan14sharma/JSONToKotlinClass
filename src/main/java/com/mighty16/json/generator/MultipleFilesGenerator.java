@@ -4,6 +4,7 @@ import com.mighty16.json.core.FileSaver;
 import com.mighty16.json.core.AnnotationGenerator;
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.models.ClassModel;
+
 import java.util.List;
 
 public class MultipleFilesGenerator extends KotlinFileGenerator {
@@ -26,7 +27,7 @@ public class MultipleFilesGenerator extends KotlinFileGenerator {
                 builder.append(importString);
             }
 
-            String sourceText = builder.toString() + generateFileContentForClass(classData);
+            String sourceText = builder.toString() + generateFileContentForClass(classData, annotations);
             fileSaver.saveFile(resolver.getFileName(classData.name), sourceText);
         }
 

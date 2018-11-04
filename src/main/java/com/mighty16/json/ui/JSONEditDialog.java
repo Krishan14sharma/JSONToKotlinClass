@@ -1,17 +1,29 @@
 package com.mighty16.json.ui;
 
 import com.intellij.openapi.ui.Messages;
-import com.mighty16.json.resolver.KotlinResolver;
 import com.mighty16.json.core.models.ClassModel;
 import com.mighty16.json.core.parser.SimpleParser;
+import com.mighty16.json.resolver.KotlinDataClassResolver;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.event.*;
-import java.util.List;
 
 public class JSONEditDialog extends JDialog {
     private JPanel contentPane;
@@ -135,14 +147,14 @@ public class JSONEditDialog extends JDialog {
 
     private void processJSON(String jsonText, String rootClassName) {
         try {
-            SimpleParser parser = new SimpleParser(new KotlinResolver());
+            SimpleParser parser = new SimpleParser(new KotlinDataClassResolver());
             JSONObject json = new JSONObject(jsonText);
             parser.parse(json, rootClassName);
             List<ClassModel> parsedClasses = parser.getClasses();
 
             dispose();
             if (callbacks != null) {
-                callbacks.onJsonParsed(parsedClasses);
+                callbacks.onJsonParsed(parsedClasses, rootClassName);
             }
 
         } catch (JSONException e) {
@@ -157,6 +169,6 @@ public class JSONEditDialog extends JDialog {
     }
 
     public interface JSONEditCallbacks {
-        void onJsonParsed(List<ClassModel> classDataList);
+        void onJsonParsed(List<ClassModel> classDataList, String rootClassName);
     }
 }

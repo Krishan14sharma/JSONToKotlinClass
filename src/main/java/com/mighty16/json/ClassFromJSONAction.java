@@ -1,31 +1,36 @@
 package com.mighty16.json;
 
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import com.intellij.util.ui.UIUtil;
-import com.mighty16.json.annotations.*;
+import com.mighty16.json.annotations.GsonAnnotations;
 import com.mighty16.json.core.AnnotationGenerator;
 import com.mighty16.json.core.FileSaver;
-import com.mighty16.json.generator.SingleFileGenerator;
-import com.mighty16.json.core.SourceFilesGenerator;
-import com.mighty16.json.generator.MultipleFilesGenerator;
-import com.mighty16.json.resolver.KotlinFileType;
-import com.mighty16.json.resolver.KotlinResolver;
-import com.mighty16.json.core.models.ClassModel;
 import com.mighty16.json.core.LanguageResolver;
+import com.mighty16.json.core.SourceFilesGenerator;
+import com.mighty16.json.core.models.ClassModel;
+import com.mighty16.json.generator.DomainModelGenerator;
+import com.mighty16.json.generator.MultipleFilesGenerator;
+import com.mighty16.json.resolver.KotlinDataClassResolver;
+import com.mighty16.json.resolver.KotlinFileType;
 import com.mighty16.json.ui.JSONEditDialog;
 import com.mighty16.json.ui.ModelTableDialog;
 import com.mighty16.json.ui.NotificationsHelper;
 import com.mighty16.json.ui.TextResources;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
@@ -36,6 +41,7 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
     private Point lastDialogLocation;
     private LanguageResolver languageResolver;
     private TextResources textResources;
+    private String rootClassName;
 
     public ClassFromJSONAction() {
         super();
@@ -43,7 +49,7 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        languageResolver = new KotlinResolver();
+        languageResolver = new KotlinDataClassResolver();
         textResources = new TextResources();
 
         Project project = event.getProject();
@@ -78,7 +84,8 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
     }
 
     @Override
-    public void onJsonParsed(List<ClassModel> classDataList) {
+    public void onJsonParsed(List<ClassModel> classDataList, String rootClassName) {
+        this.rootClassName = rootClassName;
         ModelTableDialog tableDialog = new ModelTableDialog(classDataList, languageResolver, textResources, this);
         if (lastDialogLocation != null) {
             tableDialog.setLocation(lastDialogLocation);
@@ -115,7 +122,7 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
         if (singleFileName == null) {
             generator = new MultipleFilesGenerator(fileSaver, languageResolver, annotations);
         } else {
-            generator = new SingleFileGenerator(singleFileName, languageResolver, annotations, fileSaver);
+            generator = new DomainModelGenerator(rootClassName, languageResolver, annotations, fileSaver);
         }
 
         generator.setListener(filesCount ->

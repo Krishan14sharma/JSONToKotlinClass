@@ -3,6 +3,7 @@ package com.mighty16.json.core.parser;
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.models.ClassModel;
 import com.mighty16.json.core.models.FieldModel;
+
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

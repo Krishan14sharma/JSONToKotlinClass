@@ -2,6 +2,7 @@ package com.mighty16.json.resolver;
 
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.models.FieldModel;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
@@ -13,6 +14,8 @@ public class KotlinResolver extends LanguageResolver {
     private static final String STRING = "String";
     private static final String DOUBLE = "Double";
     private static final String BOOLEAN = "Boolean";
+    public static final String ARRAY = "Array";
+    public static final String OBJECT = "Object";
 
     private HashMap<String, String> types;
     private HashMap<String, Object> defaultvalues;
@@ -76,12 +79,12 @@ public class KotlinResolver extends LanguageResolver {
 
     @Override
     public String getArrayOriginalValue() {
-        return "Array";
+        return ARRAY;
     }
 
     @Override
     public String getObjectOriginalValue() {
-        return "Object";
+        return OBJECT;
     }
 
     @Override
@@ -110,7 +113,7 @@ public class KotlinResolver extends LanguageResolver {
         return className + ".kt";
     }
 
-    private String toCamelCase(String name) {
+    protected String toCamelCase(String name) {
         String result;
         int nonCharPos = getNoCharPosition(name);
         if (nonCharPos != -1) {

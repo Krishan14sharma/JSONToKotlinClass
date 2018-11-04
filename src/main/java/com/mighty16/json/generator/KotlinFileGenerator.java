@@ -25,7 +25,7 @@ public class KotlinFileGenerator extends SourceFilesGenerator {
 
     }
 
-    public String generateFileContentForClass(ClassModel classData) {
+    public String generateFileContentForClass(ClassModel classData, AnnotationGenerator annotations) {
 
         StringBuilder builder = new StringBuilder();
 
@@ -57,7 +57,7 @@ public class KotlinFileGenerator extends SourceFilesGenerator {
         return builder.toString();
     }
 
-    private String getGapString(int count) {
+    protected String getGapString(int count) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < count; i++) {
             builder.append(" ");

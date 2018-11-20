@@ -3,6 +3,8 @@ package com.mighty16.json.core.parser;
 
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.models.ClassModel;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.List;
 
@@ -14,7 +16,7 @@ public abstract class JsonParser {
         this.languageResolver = resolver;
     }
 
-    public abstract void parse(JSONObject json, String rootClassName);
+    public abstract void parse(JSONObject json, String rootClassName) throws JSONException;
 
     public abstract List<ClassModel> getClasses();
 

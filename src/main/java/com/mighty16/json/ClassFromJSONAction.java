@@ -21,7 +21,7 @@ import com.mighty16.json.core.FileSaver;
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.SourceFilesGenerator;
 import com.mighty16.json.core.models.ClassModel;
-import com.mighty16.json.generator.DomainModelGenerator;
+import com.mighty16.json.generator.DomainDataModelGenerator;
 import com.mighty16.json.generator.MultipleFilesGenerator;
 import com.mighty16.json.resolver.KotlinDataClassResolver;
 import com.mighty16.json.resolver.KotlinFileType;
@@ -34,6 +34,8 @@ import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
+
+import static com.mighty16.json.resolver.KotlinDataClassResolver.DATA_MODEL_POSTFIX;
 
 public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSONEditCallbacks, ModelTableDialog.ModelTableCallbacks {
 
@@ -84,9 +86,9 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
     }
 
     @Override
-    public void onJsonParsed(List<ClassModel> classDataList, String rootClassName) {
+    public void onJsonParsed(List<ClassModel> classDataList, List<ClassModel> flatParsedClasses, String rootClassName) {
         this.rootClassName = rootClassName;
-        ModelTableDialog tableDialog = new ModelTableDialog(classDataList, languageResolver, textResources, this);
+        ModelTableDialog tableDialog = new ModelTableDialog(classDataList, flatParsedClasses, languageResolver, textResources, this);
         if (lastDialogLocation != null) {
             tableDialog.setLocation(lastDialogLocation);
         }
@@ -101,7 +103,7 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
     }
 
     @Override
-    public void onModelsReady(List<ClassModel> data, String singleFileName, int annotationsType) {
+    public void onModelsReady(List<ClassModel> data, List<ClassModel> flatData, String singleFileName, int annotationsType) {
         AnnotationGenerator annotations = new GsonAnnotations();
         Project project = directory.getProject();
         PsiFileFactory factory = PsiFileFactory.getInstance(project);
@@ -118,18 +120,24 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
             return ok == 0;
         });
 
-        SourceFilesGenerator generator;
+        SourceFilesGenerator dataGenerator;
+        SourceFilesGenerator domainGenerator;
+
         if (singleFileName == null) {
-            generator = new MultipleFilesGenerator(fileSaver, languageResolver, annotations);
+            dataGenerator = new MultipleFilesGenerator(fileSaver, languageResolver, annotations);
+            domainGenerator = dataGenerator;
         } else {
-            generator = new DomainModelGenerator(rootClassName, languageResolver, annotations, fileSaver);
+            dataGenerator = new DomainDataModelGenerator(rootClassName + DATA_MODEL_POSTFIX, languageResolver, annotations, fileSaver);
+            domainGenerator = new DomainDataModelGenerator(rootClassName, languageResolver, null, fileSaver);
         }
 
-        generator.setListener(filesCount ->
+        dataGenerator.setListener(filesCount ->
                 NotificationsHelper.showNotification(directory.getProject(),
                         textResources.getGeneratedFilesMessage(filesCount))
         );
 
-        generator.generateFiles(packageName, data);
+        dataGenerator.generateFiles(packageName, data);
+        domainGenerator.generateFiles(packageName, flatData);
+
     }
 }

@@ -2,8 +2,10 @@ package com.mighty16.json.ui;
 
 import com.intellij.openapi.ui.Messages;
 import com.mighty16.json.core.models.ClassModel;
+import com.mighty16.json.core.parser.SimpleFlatteningParser;
 import com.mighty16.json.core.parser.SimpleParser;
 import com.mighty16.json.resolver.KotlinDataClassResolver;
+import com.mighty16.json.resolver.KotlinResolver;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -148,13 +150,17 @@ public class JSONEditDialog extends JDialog {
     private void processJSON(String jsonText, String rootClassName) {
         try {
             SimpleParser parser = new SimpleParser(new KotlinDataClassResolver());
+            SimpleFlatteningParser simpleFlatteningParser = new SimpleFlatteningParser(new KotlinResolver());
+
             JSONObject json = new JSONObject(jsonText);
             parser.parse(json, rootClassName);
+            simpleFlatteningParser.parse(json, rootClassName);
             List<ClassModel> parsedClasses = parser.getClasses();
+            List<ClassModel> flatParsedClasses = simpleFlatteningParser.getClasses();
 
             dispose();
             if (callbacks != null) {
-                callbacks.onJsonParsed(parsedClasses, rootClassName);
+                callbacks.onJsonParsed(parsedClasses, flatParsedClasses, rootClassName);
             }
 
         } catch (JSONException e) {
@@ -169,6 +175,6 @@ public class JSONEditDialog extends JDialog {
     }
 
     public interface JSONEditCallbacks {
-        void onJsonParsed(List<ClassModel> classDataList, String rootClassName);
+        void onJsonParsed(List<ClassModel> classDataList, List<ClassModel> flatParsedClasses, String rootClassName);
     }
 }

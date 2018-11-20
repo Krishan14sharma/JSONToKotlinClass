@@ -35,6 +35,7 @@ public class ModelTableDialog extends JDialog implements ClassesListDelegate.OnC
     private ClassesListDelegate classesListDelegate;
 
     private List<ClassModel> data;
+    private List<ClassModel> flatData;
 
     private ModelTableCallbacks callbacks;
 
@@ -44,9 +45,10 @@ public class ModelTableDialog extends JDialog implements ClassesListDelegate.OnC
 
     private TextResources textResources;
 
-    public ModelTableDialog(List<ClassModel> data, LanguageResolver resolver,
+    public ModelTableDialog(List<ClassModel> data, List<ClassModel> flatParsedClasses, LanguageResolver resolver,
                             TextResources textResources, ModelTableCallbacks callbacks) {
         this.data = data;
+        this.flatData = flatParsedClasses;
         this.callbacks = callbacks;
         this.textResources = textResources;
         init();
@@ -105,7 +107,7 @@ public class ModelTableDialog extends JDialog implements ClassesListDelegate.OnC
                     }
                 }
             }
-            callbacks.onModelsReady(data, "Data", annotationsType);
+            callbacks.onModelsReady(data, flatData, "Data", annotationsType);
             dispose();
         }
     }
@@ -118,6 +120,6 @@ public class ModelTableDialog extends JDialog implements ClassesListDelegate.OnC
     }
 
     public interface ModelTableCallbacks {
-        void onModelsReady(List<ClassModel> data, String singleFileName, int annotationsType);
+        void onModelsReady(List<ClassModel> data, List<ClassModel> flatData, String singleFileName, int annotationsType);
     }
 }

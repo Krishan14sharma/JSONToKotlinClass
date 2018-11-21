@@ -21,8 +21,8 @@ import com.mighty16.json.core.FileSaver;
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.SourceFilesGenerator;
 import com.mighty16.json.core.models.ClassModel;
-import com.mighty16.json.generator.DomainDataModelGenerator;
-import com.mighty16.json.generator.MultipleFilesGenerator;
+import com.mighty16.json.generator.DataModelGenerator;
+import com.mighty16.json.generator.DomainModelGenerator;
 import com.mighty16.json.resolver.KotlinDataClassResolver;
 import com.mighty16.json.resolver.KotlinFileType;
 import com.mighty16.json.ui.JSONEditDialog;
@@ -120,16 +120,8 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
             return ok == 0;
         });
 
-        SourceFilesGenerator dataGenerator;
-        SourceFilesGenerator domainGenerator;
-
-        if (singleFileName == null) {
-            dataGenerator = new MultipleFilesGenerator(fileSaver, languageResolver, annotations);
-            domainGenerator = dataGenerator;
-        } else {
-            dataGenerator = new DomainDataModelGenerator(rootClassName + DATA_MODEL_POSTFIX, languageResolver, annotations, fileSaver);
-            domainGenerator = new DomainDataModelGenerator(rootClassName, languageResolver, null, fileSaver);
-        }
+        SourceFilesGenerator dataGenerator = new DataModelGenerator(rootClassName + DATA_MODEL_POSTFIX, languageResolver, annotations, fileSaver);
+        SourceFilesGenerator domainGenerator = new DomainModelGenerator(rootClassName, languageResolver, null, fileSaver);
 
         dataGenerator.setListener(filesCount ->
                 NotificationsHelper.showNotification(directory.getProject(),

@@ -19,10 +19,8 @@ import com.mighty16.json.annotations.GsonAnnotations;
 import com.mighty16.json.core.AnnotationGenerator;
 import com.mighty16.json.core.FileSaver;
 import com.mighty16.json.core.LanguageResolver;
-import com.mighty16.json.core.SourceFilesGenerator;
 import com.mighty16.json.core.models.ClassModel;
-import com.mighty16.json.generator.DataModelGenerator;
-import com.mighty16.json.generator.DomainModelGenerator;
+import com.mighty16.json.generator.DomainDataModelGenerator;
 import com.mighty16.json.resolver.KotlinDataClassResolver;
 import com.mighty16.json.resolver.KotlinFileType;
 import com.mighty16.json.ui.JSONEditDialog;
@@ -34,8 +32,6 @@ import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
-
-import static com.mighty16.json.resolver.KotlinDataClassResolver.DATA_MODEL_POSTFIX;
 
 public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSONEditCallbacks, ModelTableDialog.ModelTableCallbacks {
 
@@ -120,16 +116,15 @@ public class ClassFromJSONAction extends AnAction implements JSONEditDialog.JSON
             return ok == 0;
         });
 
-        SourceFilesGenerator dataGenerator = new DataModelGenerator(rootClassName + DATA_MODEL_POSTFIX, languageResolver, annotations, fileSaver);
-        SourceFilesGenerator domainGenerator = new DomainModelGenerator(rootClassName, languageResolver, null, fileSaver);
+//        SourceFilesGenerator dataGenerator = new DataModelGenerator(rootClassName + DATA_MODEL_POSTFIX, languageResolver, annotations, fileSaver);
+//        SourceFilesGenerator domainGenerator = new DomainModelGenerator(rootClassName, languageResolver, null, fileSaver);
 
-        dataGenerator.setListener(filesCount ->
+        DomainDataModelGenerator generator = new DomainDataModelGenerator(rootClassName, languageResolver, annotations, fileSaver);
+        generator.setListener(filesCount ->
                 NotificationsHelper.showNotification(directory.getProject(),
                         textResources.getGeneratedFilesMessage(filesCount))
         );
 
-        dataGenerator.generateFiles(packageName, data);
-        domainGenerator.generateFiles(packageName, flatData);
-
+        generator.generateFiles(packageName, data, flatData);
     }
 }

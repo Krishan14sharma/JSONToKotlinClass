@@ -1,7 +1,7 @@
 package com.mighty16.json.core;
 
 import com.mighty16.json.core.models.ClassModel;
-import com.mighty16.json.core.models.FieldModel;
+
 import java.util.List;
 
 public abstract class SourceFilesGenerator {
@@ -11,7 +11,7 @@ public abstract class SourceFilesGenerator {
     protected FileSaver fileSaver;
     protected Listener listener;
 
-    public SourceFilesGenerator(LanguageResolver resolver, AnnotationGenerator annotations,FileSaver fileSaver) {
+    public SourceFilesGenerator(LanguageResolver resolver, AnnotationGenerator annotations, FileSaver fileSaver) {
         this.resolver = resolver;
         this.annotations = annotations;
         this.fileSaver = fileSaver;

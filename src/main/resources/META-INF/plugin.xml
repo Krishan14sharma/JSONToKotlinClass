@@ -1,41 +1,30 @@
 <idea-plugin>
     <id>com.mighty16.json.kotlin.class</id>
     <name>Generate Kotlin data classes from JSON</name>
-    <version>0.9.5</version>
-    <vendor email="mighty16.developer@gmail.com">Mighty16</vendor>
-
+    <version>1.0.0</version>
     <description><![CDATA[Plugin generates Kotlin data classes from JSON text.
-        It can find inner classes in nested JSON. You can disable undesirable fields in class,
-        change field name, set it's type to optional, specify default value and add annotations for popular json
-        libraries.<br><br>
+        It can find inner classes in nested JSON.
 
         Features:<br><br>
 
         • json highlight and validation<br>
         • nested json parsing<br>
         • var/val support<br>
-        • default value support<br>
         • generation to single file<br>
-        • annotations for Gson, Moshi, Jackson<br><br>
+        • annotations for Gson, Moshi, Jackson<br><br>]]>
 
-        If you like this plugin please rate it or give it a star on
-        <a href="https://github.com/Mighty16/JSONToKotlinClass">GitHub page</a>
-        <br><br>
-        If you have any questions or suggestions let me know
-        <a href="mailto:mighty16.developer@gmail.com">mighty16.developer@gmail.com</a>]]>
     </description>
 
-    <idea-version since-build="145.0"/>
+    <idea-version since-build="145.0" />
 
-    <extensions defaultExtensionNs="com.intellij">
-    </extensions>
+    <extensions defaultExtensionNs="com.intellij"></extensions>
 
     <actions>
         <action id="com.mighty16.json.ClassFromJSONAction"
-                class="com.mighty16.json.ClassFromJSONAction"
-                text="Generate class from JSON"
-                description="Generate Kotlin data class from JSON">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            class="com.mighty16.json.ClassFromJSONAction"
+            text="Generate Domain/Data classes from JSON"
+            description="Generate Kotlin Domain/Data class from JSON">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
         </action>
     </actions>
 

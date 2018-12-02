@@ -4,7 +4,9 @@ import com.mighty16.json.core.AnnotationGenerator;
 import com.mighty16.json.core.FileSaver;
 import com.mighty16.json.core.LanguageResolver;
 import com.mighty16.json.core.models.ClassModel;
+import com.mighty16.json.core.models.DomainFieldModel;
 import com.mighty16.json.core.models.FieldModel;
+import com.mighty16.json.core.parser.SimpleFlatteningParser;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,11 +20,13 @@ import static com.mighty16.json.resolver.KotlinDataClassResolver.DATA_MODEL_POST
 public class DataModelGenerator extends KotlinFileGenerator {
 
     private String fileName;
-    private String DOMAIN_METHOD = "fun toDomainModel() = %s(%s)";
+    private String DOMAIN_METHOD = "fun " + SimpleFlatteningParser.toDomain + " = %s(%s)";
+    private List<ClassModel> flatClasses;
 
-    public DataModelGenerator(String fileName, LanguageResolver resolver, AnnotationGenerator annotations, FileSaver fileSaver) {
+    public DataModelGenerator(String fileName, LanguageResolver resolver, AnnotationGenerator annotations, FileSaver fileSaver, List<ClassModel> fieldsString) {
         super(resolver, annotations, fileSaver);
         this.fileName = fileName;
+        this.flatClasses = fieldsString;
     }
 
     @Override
@@ -85,15 +89,42 @@ public class DataModelGenerator extends KotlinFileGenerator {
             }
         }
         builder.append(CLASS_END_BLOCK);
-        if (classData.name.toLowerCase().equals(fileName.toLowerCase())) {
-            String domainModelName = fileName.replace(DATA_MODEL_POSTFIX, "");
+
+        int index = indexInFlatClasses(classData);
+        if (index != -1) {
+            StringBuilder domainMethodBuilder = new StringBuilder();
+            List<FieldModel> domainFields = flatClasses.get(index).fields;
+            int lastElement = domainFields.size() - 1;
+            for (int k = 0; k <= lastElement; k++) {
+                DomainFieldModel fieldModel = (DomainFieldModel) domainFields.get(k);
+                domainMethodBuilder.append(fieldModel.name + "=" + fieldModel.getAccessPath());
+                if (k != lastElement)
+                    domainMethodBuilder.append(",");
+            }
+
+            String domainModelName = classData.name.replace(DATA_MODEL_POSTFIX, "");
             builder.append("\n{\n");
-            String toDomainMethod = String.format(DOMAIN_METHOD, domainModelName, "");
+            String domainString = domainMethodBuilder.toString();
+            System.out.println(domainString);
+            String toDomainMethod = String.format(DOMAIN_METHOD, domainModelName, domainString);
             builder.append(toDomainMethod);
             builder.append("\n}\n");
         }
+
+
         return builder.toString();
     }
 
+    private int indexInFlatClasses(ClassModel classData) {
+        int index = -1;
+        for (int j = 0; j < flatClasses.size(); j++) {
+            if (classData.name.replace(DATA_MODEL_POSTFIX, "").toLowerCase().equals(flatClasses.get(j).name.toLowerCase())) {
+                index = j;
+                break;
+            }
+        }
+        return index;
+    }
 
 }
+

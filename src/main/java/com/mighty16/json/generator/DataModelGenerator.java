@@ -99,7 +99,7 @@ public class DataModelGenerator extends KotlinFileGenerator {
                 DomainFieldModel fieldModel = (DomainFieldModel) domainFields.get(k);
                 domainMethodBuilder.append(fieldModel.name + "=" + fieldModel.getAccessPath());
                 if (k != lastElement)
-                    domainMethodBuilder.append(",");
+                    domainMethodBuilder.append(",\n" + gapString);
             }
 
             String domainModelName = classData.name.replace(DATA_MODEL_POSTFIX, "");
